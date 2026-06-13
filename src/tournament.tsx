@@ -10,7 +10,7 @@ export const BABS = [
 ];
 type Bab = (typeof BABS)[number];
 
-const TEAMS = [
+export const TEAMS = [
   "Spain",
   "France",
   "Portugal",
@@ -24,7 +24,7 @@ const TEAMS = [
   "Morocco",
   "Norway",
   "Japan",
-  "USA",
+  "United States",
   "Mexico",
   "Belgium",
   "Croatia",
@@ -46,9 +46,9 @@ const TEAMS = [
   "Ghana",
   "Australia",
   "Iraq",
-  "Czechia",
+  "Czech Republic",
   "Uzbekistan",
-  "Bosnia",
+  "Bosnia and Herzegovina",
   "New Zealand",
   "Saudi Arabia",
   "Haiti",
@@ -56,7 +56,7 @@ const TEAMS = [
   "Qatar",
   "Tunisia",
   "Curaçao",
-  "Congo",
+  "Democratic Republic of the Congo",
   "South Africa",
   "Cape Verde",
 ];
@@ -76,7 +76,7 @@ const DRAFT_PICKS: Record<Team, Bab> = {
   Morocco: "Omar",
   Norway: "Eugene",
   Japan: "Chad",
-  USA: "Potocki",
+  "United States": "Potocki",
   Mexico: "Ross",
   Belgium: "Twomey",
   Croatia: "Julius",
@@ -98,9 +98,9 @@ const DRAFT_PICKS: Record<Team, Bab> = {
   Ghana: "Julius",
   Australia: "Rob",
   Iraq: "Omar",
-  Czechia: "Eugene",
+  "Czech Republic": "Eugene",
   Uzbekistan: "Chad",
-  Bosnia: "Potocki",
+  "Bosnia and Herzegovina": "Potocki",
   "New Zealand": "Ross",
   "Saudi Arabia": "Twomey",
   Haiti: "Julius",
@@ -108,7 +108,7 @@ const DRAFT_PICKS: Record<Team, Bab> = {
   Qatar: "Omar",
   Tunisia: "Eugene",
   Curaçao: "Chad",
-  Congo: "Potocki",
+  "Democratic Republic of the Congo": "Potocki",
   "South Africa": "Ross",
   "Cape Verde": "Twomey",
 };
@@ -124,9 +124,31 @@ BABS.forEach((bab) => {
   }
 });
 
-const GROUPS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
-const ELIMINATION_ROUNDS = ["R32", "R16", "QF", "SF", "3RD", "FINAL"];
-const ROUNDS = [...GROUPS, ...ELIMINATION_ROUNDS];
+export const GROUPS = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+];
+export const ROUNDS = ["GROUP", "R32", "R16", "QF", "SF", "3RD", "FINAL"];
+type Round = (typeof ROUNDS)[number];
+
+export type Game = {
+  homeTeam: Team;
+  awayTeam: Team;
+  homeScore: number;
+  awayScore: number;
+  round: Round;
+  isFinished: boolean;
+};
 
 // 1 point for a tie
 // 3 points for group play win
@@ -136,3 +158,48 @@ const ROUNDS = [...GROUPS, ...ELIMINATION_ROUNDS];
 // 7 points for semifinal win
 // 8 points for overall winner
 // 5 points for 3rd place game winner
+
+const ROUND_WIN_POINTS: Record<Round, number> = {
+  GROUP: 3,
+  R32: 4,
+  R16: 5,
+  QF: 6,
+  SF: 7,
+  "3RD": 5,
+  FINAL: 8,
+};
+
+type Score = Record<Round, number> & { total: number };
+
+export function calculateScores(games: Game[]): Record<Bab, Score> {
+  const scores = Object.fromEntries(
+    BABS.map((bab) => [
+      bab,
+      { ...Object.fromEntries(ROUNDS.map((r) => [r, 0])), total: 0 },
+    ]),
+  ) as Record<Bab, Score>;
+
+  for (const game of games) {
+    if (!game.isFinished) {
+      continue;
+    }
+
+    const { homeTeam, awayTeam, homeScore, awayScore, round } = game;
+    const homeBab = DRAFT_PICKS[homeTeam];
+    const awayBab = DRAFT_PICKS[awayTeam];
+
+    if (homeScore === awayScore) {
+      scores[homeBab][round] += 1;
+      scores[homeBab].total += 1;
+      scores[awayBab][round] += 1;
+      scores[awayBab].total += 1;
+    } else {
+      const winnerBab = homeScore > awayScore ? homeBab : awayBab;
+      const pts = ROUND_WIN_POINTS[round];
+      scores[winnerBab][round] += pts;
+      scores[winnerBab].total += pts;
+    }
+  }
+
+  return scores;
+}
