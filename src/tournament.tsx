@@ -1,4 +1,4 @@
-const BABS = [
+export const BABS = [
   "Julius",
   "Rob",
   "Potocki",
