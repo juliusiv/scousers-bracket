@@ -8,7 +8,7 @@ export const BABS = [
   "Chad",
   "Twomey",
 ];
-type Bab = (typeof BABS)[number];
+export type Bab = (typeof BABS)[number];
 
 export const TEAMS = [
   "Spain",
@@ -169,7 +169,7 @@ const ROUND_WIN_POINTS: Record<Round, number> = {
   FINAL: 8,
 };
 
-type Score = Record<Round, number> & { total: number };
+export type Score = Record<Round, number> & { total: number };
 
 export function calculateScores(games: Game[]): Record<Bab, Score> {
   const scores = Object.fromEntries(

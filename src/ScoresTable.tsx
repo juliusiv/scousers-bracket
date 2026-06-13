@@ -1,28 +1,30 @@
 import type { Component } from "solid-js";
 import { For } from "solid-js";
-import { BABS } from "./tournament";
+import { BABS, type Bab, type Score } from "./tournament";
 
-const COLUMNS = [
-  "BAB",
-  "Total",
-  "Group",
-  "R32",
-  "R16",
-  "QF",
-  "SF",
-  "3RD",
-  "Final",
+const ROUND_COLUMNS: { label: string; key: keyof Score }[] = [
+  { label: "Total", key: "total" },
+  { label: "Group", key: "GROUP" },
+  { label: "R32", key: "R32" },
+  { label: "R16", key: "R16" },
+  { label: "QF", key: "QF" },
+  { label: "SF", key: "SF" },
+  { label: "3RD", key: "3RD" },
+  { label: "Final", key: "FINAL" },
 ];
 
-const ScoresTable: Component = () => {
+const ScoresTable: Component<{ scores: Record<Bab, Score> }> = (props) => {
   return (
     <table class="border-collapse text-sm">
       <thead>
         <tr>
-          <For each={COLUMNS}>
+          <th class="border border-gray-300 px-4 py-2 font-semibold text-left">
+            BAB
+          </th>
+          <For each={ROUND_COLUMNS}>
             {(col) => (
               <th class="border border-gray-300 px-4 py-2 font-semibold text-left">
-                {col}
+                {col.label}
               </th>
             )}
           </For>
@@ -33,8 +35,12 @@ const ScoresTable: Component = () => {
           {(bab) => (
             <tr>
               <td class="border border-gray-300 px-4 py-2">{bab}</td>
-              <For each={COLUMNS.slice(1)}>
-                {() => <td class="border border-gray-300 px-4 py-2"></td>}
+              <For each={ROUND_COLUMNS}>
+                {(col) => (
+                  <td class="border border-gray-300 px-4 py-2">
+                    {props.scores[bab][col.key]}
+                  </td>
+                )}
               </For>
             </tr>
           )}

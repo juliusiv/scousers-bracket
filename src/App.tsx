@@ -1,37 +1,24 @@
-import {
-  createResource,
-  Match,
-  Suspense,
-  Switch,
-  type Component,
-} from "solid-js";
+import { createResource, Match, Switch, type Component } from "solid-js";
 import ScoresTable from "./ScoresTable";
 import cachedGamesJson from "./games.json";
 import { fetchGames, parseGames } from "./api";
 import { calculateScores } from "./tournament";
 
 const App: Component = () => {
-  const cachedGames = parseGames(cachedGamesJson);
-  const [gamesFromApi] = createResource(fetchGames);
-  console.log("cachedGamesJson", cachedGamesJson);
-  console.log("gamesFromApi", gamesFromApi);
-
-  console.log(calculateScores(cachedGames));
+  const [gamesFromApi] = createResource(fetchGames, {
+    initialValue: parseGames(cachedGamesJson),
+  });
 
   return (
     <div class="p-8">
-      <Suspense fallback={<div>Loading...</div>}>
-        <Switch>
-          <Match when={gamesFromApi.error}>
-            <span>Error: {gamesFromApi.error.message}</span>
-          </Match>
-          <Match when={gamesFromApi()}>
-            <div>Loaded {gamesFromApi()?.length} games</div>
-          </Match>
-        </Switch>
-      </Suspense>
-
-      <ScoresTable />
+      <Switch>
+        <Match when={gamesFromApi.error}>
+          <span>Error loading games data: {gamesFromApi.error.message}</span>
+        </Match>
+        <Match when={gamesFromApi()}>
+          <ScoresTable scores={calculateScores(gamesFromApi())} />
+        </Match>
+      </Switch>
     </div>
   );
 };
