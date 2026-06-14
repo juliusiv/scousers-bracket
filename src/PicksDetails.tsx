@@ -12,7 +12,7 @@ const PicksDetails: Component = () => {
   return (
     <details class="mb-4">
       <summary class="cursor-pointer text-sm font-semibold">Picks</summary>
-      <div class="flex gap-6 mt-2 text-sm">
+      <div class="flex flex-wrap gap-6 mt-2 text-sm">
         <For each={BABS}>
           {(bab, i) => (
             <div>

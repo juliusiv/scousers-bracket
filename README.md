@@ -22,7 +22,7 @@ curl https://worldcup26.ir/get/games | jq .games > src/games.json
 # Push the new data and let it deploy
 git add .
 git commit -m "Update pre-fetched data"
-git push origin main
+git push
 ```
 
 ## Deployment
