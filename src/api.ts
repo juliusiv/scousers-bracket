@@ -59,6 +59,7 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
 };
 
 export const fetchGames = async (): Promise<Game[]> => {
+  throw Error("doot");
   const response = await fetch(`https://worldcup26.ir/get/games`);
   const responseJson = await response.json();
 

@@ -8,6 +8,7 @@ import {
   type Bab,
   type Game,
   type Score,
+  calculateScores,
 } from "./tournament";
 
 const ROUND_COLUMNS: { label: string; key: keyof Score }[] = [
@@ -60,9 +61,9 @@ function getBabGames(games: Game[], bab: Bab): GameResult[] {
     });
 }
 
-const ScoresTable: Component<{ scores: Record<Bab, Score>; games: Game[] }> = (
-  props,
-) => {
+const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
+  const scores = calculateScores(games);
+
   const [expanded, setExpanded] = createSignal<Bab | null>(null);
 
   const toggle = (bab: Bab) =>
@@ -71,7 +72,7 @@ const ScoresTable: Component<{ scores: Record<Bab, Score>; games: Game[] }> = (
   const colSpan = 1 + ROUND_COLUMNS.length;
 
   return (
-    <table class="border-collapse text-sm">
+    <table class="border-collapse text-xl sm:text-sm">
       <thead>
         <tr>
           <th class="border border-gray-300 px-4 py-2 font-semibold text-left">
@@ -104,7 +105,7 @@ const ScoresTable: Component<{ scores: Record<Bab, Score>; games: Game[] }> = (
                 <For each={ROUND_COLUMNS}>
                   {(col) => (
                     <td class="border border-gray-300 px-2 py-1">
-                      {props.scores[bab][col.key]}
+                      {scores[bab][col.key]}
                     </td>
                   )}
                 </For>
@@ -116,9 +117,7 @@ const ScoresTable: Component<{ scores: Record<Bab, Score>; games: Game[] }> = (
                     colspan={colSpan}
                     class="border border-gray-300 bg-gray-50 px-4 py-2"
                   >
-                    <ExpandedResults
-                      gameResults={getBabGames(props.games, bab)}
-                    />
+                    <ExpandedResults gameResults={getBabGames(games, bab)} />
                   </td>
                 </tr>
               </Show>
@@ -134,18 +133,16 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
   const { gameResults } = props;
 
   return (
-    <table class="w-full text-xs border-collapse">
+    <table class=" text-lg sm:text-xs border-collapse">
       <thead>
         <tr class="text-gray-500">
           <th class="text-left pr-4 pb-1 font-medium">Round</th>
           <th class="text-left pr-4 pb-1 font-medium">Match</th>
           <th class="text-left pr-4 pb-1 font-medium">Score</th>
-          {/* <th class="text-left pr-4 pb-1 font-medium">
-                            Relevant team(s)
-                          </th> */}
           <th class="text-left pb-1 font-medium">Pts</th>
         </tr>
       </thead>
+
       <tbody>
         <For each={gameResults}>
           {({ game, homeIsBab, awayIsBab, points }) => {
@@ -157,8 +154,8 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
             const resultColor = isDraw
               ? "text-gray-500"
               : babWon
-                ? "text-green-600 font-semibold"
-                : "text-red-500";
+                ? "text-green-700 font-semibold"
+                : "text-red-700";
 
             return (
               <tr class="border-t border-gray-200">
@@ -177,14 +174,12 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
                 <td class="pr-4 py-1 font-mono">
                   {game.homeScore}-{game.awayScore}
                 </td>
-                {/* <td class="pr-4 py-1">{relevantTeams}</td> */}
                 <td class={`py-1 ${resultColor}`}>
                   {points > 0
                     ? `+${points}`
                     : result === "Loss"
                       ? "0"
                       : `+${points}`}{" "}
-                  <span class="text-gray-400 font-normal">({result})</span>
                 </td>
               </tr>
             );
