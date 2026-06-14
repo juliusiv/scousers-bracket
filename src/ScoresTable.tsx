@@ -133,7 +133,7 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
   const { gameResults } = props;
 
   return (
-    <table class=" text-lg sm:text-xs border-collapse">
+    <table class="text-lg sm:text-xs border-collapse">
       <thead>
         <tr class="text-gray-500">
           <th class="text-left pr-4 pb-1 font-medium">Round</th>

@@ -22,7 +22,9 @@ const App: Component = () => {
         </div>
       </Show>
 
-      <ScoresTable games={games} />
+      <div class="w-full overflow-scroll">
+        <ScoresTable games={games} />
+      </div>
     </div>
   );
 };
