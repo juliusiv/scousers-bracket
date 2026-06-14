@@ -1,4 +1,4 @@
-import { Game, GROUPS, ROUNDS, TEAMS } from "./tournament";
+import { Game, GROUPS, ROUNDS, TEAM_NAMES } from "./tournament";
 
 type ApiGame = {
   home_team_name_en?: string;
@@ -27,7 +27,7 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
       return;
     }
 
-    if (!TEAMS.includes(homeTeam) || !TEAMS.includes(awayTeam)) {
+    if (!TEAM_NAMES.includes(homeTeam) || !TEAM_NAMES.includes(awayTeam)) {
       throw Error(`Invalid team: ${homeTeam}, ${awayTeam}`);
     }
     game.homeTeam = homeTeam;
@@ -59,7 +59,6 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
 };
 
 export const fetchGames = async (): Promise<Game[]> => {
-  throw Error("doot");
   const response = await fetch(`https://worldcup26.ir/get/games`);
   const responseJson = await response.json();
 

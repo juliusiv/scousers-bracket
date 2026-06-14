@@ -3,7 +3,7 @@ import { createSignal, For, Show } from "solid-js";
 import {
   BABS,
   DRAFT_PICKS,
-  TEAM_FLAGS,
+  TEAMS,
   ROUND_WIN_POINTS,
   type Bab,
   type Game,
@@ -157,6 +157,22 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
                 ? "text-green-700 font-semibold"
                 : "text-red-700";
 
+            const homeNameShort = TEAMS[game.homeTeam].short;
+            const homeNameLong = game.homeTeam;
+            const awayNameShort = TEAMS[game.awayTeam].short;
+            const awayNameLong = game.awayTeam;
+
+            const TeamName = (props: { short: string; long: string }) => {
+              const { short, long } = props;
+
+              return (
+                <>
+                  <span class="inline sm:hidden">{short}</span>
+                  <span class="hidden sm:inline">{long}</span>
+                </>
+              );
+            };
+
             return (
               <tr class="border-t border-gray-200">
                 <td class="pr-4 py-1 text-gray-500">
@@ -164,11 +180,13 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
                 </td>
                 <td class="pr-4 py-1">
                   <span class={homeIsBab ? "underline" : ""}>
-                    {TEAM_FLAGS[game.homeTeam]} {game.homeTeam}
+                    {TEAMS[game.homeTeam].flag}{" "}
+                    <TeamName short={homeNameShort} long={homeNameLong} />
                   </span>{" "}
                   vs{" "}
                   <span class={awayIsBab ? "underline" : ""}>
-                    {TEAM_FLAGS[game.awayTeam]} {game.awayTeam}
+                    {TEAMS[game.awayTeam].flag}{" "}
+                    <TeamName short={awayNameShort} long={awayNameLong} />
                   </span>
                 </td>
                 <td class="pr-4 py-1 font-mono">

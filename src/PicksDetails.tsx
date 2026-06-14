@@ -1,6 +1,6 @@
 import type { Component } from "solid-js";
 import { For } from "solid-js";
-import { BABS, DRAFT_PICKS, TEAM_FLAGS } from "./tournament";
+import { BABS, DRAFT_PICKS, TEAMS } from "./tournament";
 
 const picksByBab = BABS.map((bab) =>
   Object.entries(DRAFT_PICKS)
@@ -16,18 +16,24 @@ const PicksDetails: Component = () => {
       </summary>
       <div class="flex flex-wrap gap-6 mt-2 text-xl sm:text-sm">
         <For each={BABS}>
-          {(bab, i) => (
-            <div>
-              <div class="font-semibold mb-1">{bab}</div>
-              <For each={picksByBab[i()]}>
-                {(team) => (
-                  <div>
-                    {TEAM_FLAGS[team]} {team}
-                  </div>
-                )}
-              </For>
-            </div>
-          )}
+          {(bab, i) => {
+            return (
+              <div>
+                <div class="font-semibold mb-1">{bab}</div>
+                <For each={picksByBab[i()]}>
+                  {(team) => {
+                    const flag = TEAMS[team].flag;
+
+                    return (
+                      <div>
+                        {flag} {team}
+                      </div>
+                    );
+                  }}
+                </For>
+              </div>
+            );
+          }}
         </For>
       </div>
     </details>

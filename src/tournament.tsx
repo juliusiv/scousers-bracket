@@ -10,7 +10,7 @@ export const BABS = [
 ];
 export type Bab = (typeof BABS)[number];
 
-export const TEAMS = [
+export const TEAM_NAMES = [
   "Spain",
   "France",
   "Portugal",
@@ -60,60 +60,60 @@ export const TEAMS = [
   "South Africa",
   "Cape Verde",
 ];
-type Team = (typeof TEAMS)[number];
+type TeamName = (typeof TEAM_NAMES)[number];
 
-export const TEAM_FLAGS: Record<Team, string> = {
-  Spain: "🇪🇸",
-  France: "🇫🇷",
-  Portugal: "🇵🇹",
-  Argentina: "🇦🇷",
-  England: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-  Brazil: "🇧🇷",
-  Germany: "🇩🇪",
-  Netherlands: "🇳🇱",
-  Senegal: "🇸🇳",
-  Colombia: "🇨🇴",
-  Morocco: "🇲🇦",
-  Norway: "🇳🇴",
-  Japan: "🇯🇵",
-  "United States": "🇺🇸",
-  Mexico: "🇲🇽",
-  Belgium: "🇧🇪",
-  Croatia: "🇭🇷",
-  Uruguay: "🇺🇾",
-  Ecuador: "🇪🇨",
-  Switzerland: "🇨🇭",
-  "South Korea": "🇰🇷",
-  Canada: "🇨🇦",
-  Panama: "🇵🇦",
-  Algeria: "🇩🇿",
-  Egypt: "🇪🇬",
-  Paraguay: "🇵🇾",
-  Sweden: "🇸🇪",
-  Scotland: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
-  Austria: "🇦🇹",
-  Iran: "🇮🇷",
-  Turkey: "🇹🇷",
-  "Ivory Coast": "🇨🇮",
-  Ghana: "🇬🇭",
-  Australia: "🇦🇺",
-  Iraq: "🇮🇶",
-  "Czech Republic": "🇨🇿",
-  Uzbekistan: "🇺🇿",
-  "Bosnia and Herzegovina": "🇧🇦",
-  "New Zealand": "🇳🇿",
-  "Saudi Arabia": "🇸🇦",
-  Haiti: "🇭🇹",
-  Jordan: "🇯🇴",
-  Qatar: "🇶🇦",
-  Tunisia: "🇹🇳",
-  Curaçao: "🇨🇼",
-  "Democratic Republic of the Congo": "🇨🇩",
-  "South Africa": "🇿🇦",
-  "Cape Verde": "🇨🇻",
+export const TEAMS: Record<TeamName, { flag: string; short: string }> = {
+  Spain: { flag: "🇪🇸", short: "ESP" },
+  France: { flag: "🇫🇷", short: "FRA" },
+  Portugal: { flag: "🇵🇹", short: "POR" },
+  Argentina: { flag: "🇦🇷", short: "ARG" },
+  England: { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", short: "ENG" },
+  Brazil: { flag: "🇧🇷", short: "BRA" },
+  Germany: { flag: "🇩🇪", short: "GER" },
+  Netherlands: { flag: "🇳🇱", short: "NED" },
+  Senegal: { flag: "🇸🇳", short: "SEN" },
+  Colombia: { flag: "🇨🇴", short: "COL" },
+  Morocco: { flag: "🇲🇦", short: "MAR" },
+  Norway: { flag: "🇳🇴", short: "NOR" },
+  Japan: { flag: "🇯🇵", short: "JPN" },
+  "United States": { flag: "🇺🇸", short: "USA" },
+  Mexico: { flag: "🇲🇽", short: "MEX" },
+  Belgium: { flag: "🇧🇪", short: "BEL" },
+  Croatia: { flag: "🇭🇷", short: "CRO" },
+  Uruguay: { flag: "🇺🇾", short: "URU" },
+  Ecuador: { flag: "🇪🇨", short: "ECU" },
+  Switzerland: { flag: "🇨🇭", short: "SUI" },
+  "South Korea": { flag: "🇰🇷", short: "KOR" },
+  Canada: { flag: "🇨🇦", short: "CAN" },
+  Panama: { flag: "🇵🇦", short: "PAN" },
+  Algeria: { flag: "🇩🇿", short: "ALG" },
+  Egypt: { flag: "🇪🇬", short: "EGY" },
+  Paraguay: { flag: "🇵🇾", short: "PAR" },
+  Sweden: { flag: "🇸🇪", short: "SWE" },
+  Scotland: { flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", short: "SCO" },
+  Austria: { flag: "🇦🇹", short: "AUT" },
+  Iran: { flag: "🇮🇷", short: "IRN" },
+  Turkey: { flag: "🇹🇷", short: "TUR" },
+  "Ivory Coast": { flag: "🇨🇮", short: "CIV" },
+  Ghana: { flag: "🇬🇭", short: "GHA" },
+  Australia: { flag: "🇦🇺", short: "AUS" },
+  Iraq: { flag: "🇮🇶", short: "IRQ" },
+  "Czech Republic": { flag: "🇨🇿", short: "CZE" },
+  Uzbekistan: { flag: "🇺🇿", short: "UZB" },
+  "Bosnia and Herzegovina": { flag: "🇧🇦", short: "BIH" },
+  "New Zealand": { flag: "🇳🇿", short: "NZL" },
+  "Saudi Arabia": { flag: "🇸🇦", short: "KSA" },
+  Haiti: { flag: "🇭🇹", short: "HAI" },
+  Jordan: { flag: "🇯🇴", short: "JOR" },
+  Qatar: { flag: "🇶🇦", short: "QAT" },
+  Tunisia: { flag: "🇹🇳", short: "TUN" },
+  Curaçao: { flag: "🇨🇼", short: "CUW" },
+  "Democratic Republic of the Congo": { flag: "🇨🇩", short: "COD" },
+  "South Africa": { flag: "🇿🇦", short: "RSA" },
+  "Cape Verde": { flag: "🇨🇻", short: "CPV" },
 };
 
-export const DRAFT_PICKS: Record<Team, Bab> = {
+export const DRAFT_PICKS: Record<TeamName, Bab> = {
   Spain: "Julius",
   France: "Rob",
   Portugal: "Omar",
@@ -193,8 +193,8 @@ export const ROUNDS = ["GROUP", "R32", "R16", "QF", "SF", "3RD", "FINAL"];
 type Round = (typeof ROUNDS)[number];
 
 export type Game = {
-  homeTeam: Team;
-  awayTeam: Team;
+  homeTeam: TeamName;
+  awayTeam: TeamName;
   homeScore: number;
   awayScore: number;
   round: Round;
