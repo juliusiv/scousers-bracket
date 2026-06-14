@@ -10,22 +10,22 @@ const picksByBab = BABS.map((bab) =>
 
 const PicksDetails: Component = () => {
   return (
-    <details class="mb-4">
+    <details class="mb-4" open>
       <summary class="cursor-pointer text-xl sm:text-sm font-semibold">
         Picks
       </summary>
-      <div class="flex flex-wrap gap-6 mt-2 text-xl sm:text-sm">
+      <div class="grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:gap-6 mt-2 text-xl sm:text-sm">
         <For each={BABS}>
           {(bab, i) => {
             return (
-              <div>
-                <div class="font-semibold mb-1">{bab}</div>
+              <div class="min-w-0">
+                <div class="font-semibold mb-1 truncate">{bab}</div>
                 <For each={picksByBab[i()]}>
                   {(team) => {
                     const flag = TEAMS[team].flag;
 
                     return (
-                      <div>
+                      <div class="truncate">
                         {flag} {team}
                       </div>
                     );
