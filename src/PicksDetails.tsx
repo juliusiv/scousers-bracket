@@ -10,7 +10,7 @@ const picksByBab = BABS.map((bab) =>
 
 const PicksDetails: Component = () => {
   return (
-    <details class="mb-4" open>
+    <details class="mb-4">
       <summary class="cursor-pointer text-xl sm:text-sm font-semibold">
         Picks
       </summary>
