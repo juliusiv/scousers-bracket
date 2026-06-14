@@ -3,8 +3,8 @@ import { Game, GROUPS, ROUNDS, TEAM_NAMES } from "./tournament";
 type ApiGame = {
   home_team_name_en?: string;
   away_team_name_en?: string;
-  home_score: string;
-  away_score: string;
+  home_score: string | null;
+  away_score: string | null;
   group: string;
   finished: string;
 };
