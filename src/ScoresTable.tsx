@@ -1,6 +1,14 @@
 import type { Component } from "solid-js";
-import { For } from "solid-js";
-import { BABS, type Bab, type Score } from "./tournament";
+import { createSignal, For, Show } from "solid-js";
+import {
+  BABS,
+  DRAFT_PICKS,
+  TEAM_FLAGS,
+  ROUND_WIN_POINTS,
+  type Bab,
+  type Game,
+  type Score,
+} from "./tournament";
 
 const ROUND_COLUMNS: { label: string; key: keyof Score }[] = [
   { label: "Total", key: "total" },
@@ -13,7 +21,55 @@ const ROUND_COLUMNS: { label: string; key: keyof Score }[] = [
   { label: "Final", key: "FINAL" },
 ];
 
-const ScoresTable: Component<{ scores: Record<Bab, Score> }> = (props) => {
+const ROUND_LABELS: Record<string, string> = {
+  GROUP: "Group",
+  R32: "R32",
+  R16: "R16",
+  QF: "QF",
+  SF: "SF",
+  "3RD": "3rd",
+  FINAL: "Final",
+};
+
+type GameResult = {
+  game: Game;
+  homeIsBab: boolean;
+  awayIsBab: boolean;
+  points: number;
+};
+
+function getBabGames(games: Game[], bab: Bab): GameResult[] {
+  return games
+    .filter(
+      (g) =>
+        g.isFinished &&
+        (DRAFT_PICKS[g.homeTeam] === bab || DRAFT_PICKS[g.awayTeam] === bab),
+    )
+    .map((game) => {
+      const homeIsBab = DRAFT_PICKS[game.homeTeam] === bab;
+      const awayIsBab = DRAFT_PICKS[game.awayTeam] === bab;
+      let points = 0;
+      if (game.homeScore === game.awayScore) {
+        points = (homeIsBab ? 1 : 0) + (awayIsBab ? 1 : 0);
+      } else {
+        const homeWon = game.homeScore > game.awayScore;
+        if (homeWon && homeIsBab) points = ROUND_WIN_POINTS[game.round];
+        if (!homeWon && awayIsBab) points = ROUND_WIN_POINTS[game.round];
+      }
+      return { game, homeIsBab, awayIsBab, points };
+    });
+}
+
+const ScoresTable: Component<{ scores: Record<Bab, Score>; games: Game[] }> = (
+  props,
+) => {
+  const [expanded, setExpanded] = createSignal<Bab | null>(null);
+
+  const toggle = (bab: Bab) =>
+    setExpanded((prev) => (prev === bab ? null : bab));
+
+  const colSpan = 1 + ROUND_COLUMNS.length;
+
   return (
     <table class="border-collapse text-sm">
       <thead>
@@ -30,20 +86,109 @@ const ScoresTable: Component<{ scores: Record<Bab, Score> }> = (props) => {
           </For>
         </tr>
       </thead>
+
       <tbody>
         <For each={BABS}>
           {(bab) => (
-            <tr>
-              <td class="border border-gray-300 px-4 py-2">{bab}</td>
-              <For each={ROUND_COLUMNS}>
-                {(col) => (
-                  <td class="border border-gray-300 px-4 py-2">
-                    {props.scores[bab][col.key]}
+            <>
+              <tr
+                class="cursor-pointer hover:bg-gray-50 select-none"
+                onClick={() => toggle(bab)}
+              >
+                <td class="border border-gray-300 pl-2 pr-4 py-1">
+                  <span class="mr-1 text-gray-400">
+                    {expanded() === bab ? "▾" : "▸"}
+                  </span>
+                  {bab}
+                </td>
+                <For each={ROUND_COLUMNS}>
+                  {(col) => (
+                    <td class="border border-gray-300 px-2 py-1">
+                      {props.scores[bab][col.key]}
+                    </td>
+                  )}
+                </For>
+              </tr>
+
+              <Show when={expanded() === bab}>
+                <tr>
+                  <td
+                    colspan={colSpan}
+                    class="border border-gray-300 bg-gray-50 px-4 py-2"
+                  >
+                    <ExpandedResults
+                      gameResults={getBabGames(props.games, bab)}
+                    />
                   </td>
-                )}
-              </For>
-            </tr>
+                </tr>
+              </Show>
+            </>
           )}
+        </For>
+      </tbody>
+    </table>
+  );
+};
+
+const ExpandedResults = (props: { gameResults: GameResult[] }) => {
+  const { gameResults } = props;
+
+  return (
+    <table class="w-full text-xs border-collapse">
+      <thead>
+        <tr class="text-gray-500">
+          <th class="text-left pr-4 pb-1 font-medium">Round</th>
+          <th class="text-left pr-4 pb-1 font-medium">Match</th>
+          <th class="text-left pr-4 pb-1 font-medium">Score</th>
+          {/* <th class="text-left pr-4 pb-1 font-medium">
+                            Relevant team(s)
+                          </th> */}
+          <th class="text-left pb-1 font-medium">Pts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <For each={gameResults}>
+          {({ game, homeIsBab, awayIsBab, points }) => {
+            const isDraw = game.homeScore === game.awayScore;
+            const homeWon = game.homeScore > game.awayScore;
+            const babWon =
+              (homeWon && homeIsBab) || (!homeWon && !isDraw && awayIsBab);
+            const result = isDraw ? "Draw" : babWon ? "Win" : "Loss";
+            const resultColor = isDraw
+              ? "text-gray-500"
+              : babWon
+                ? "text-green-600 font-semibold"
+                : "text-red-500";
+
+            return (
+              <tr class="border-t border-gray-200">
+                <td class="pr-4 py-1 text-gray-500">
+                  {ROUND_LABELS[game.round]}
+                </td>
+                <td class="pr-4 py-1">
+                  <span class={homeIsBab ? "underline" : ""}>
+                    {TEAM_FLAGS[game.homeTeam]} {game.homeTeam}
+                  </span>{" "}
+                  vs{" "}
+                  <span class={awayIsBab ? "underline" : ""}>
+                    {TEAM_FLAGS[game.awayTeam]} {game.awayTeam}
+                  </span>
+                </td>
+                <td class="pr-4 py-1 font-mono">
+                  {game.homeScore}-{game.awayScore}
+                </td>
+                {/* <td class="pr-4 py-1">{relevantTeams}</td> */}
+                <td class={`py-1 ${resultColor}`}>
+                  {points > 0
+                    ? `+${points}`
+                    : result === "Loss"
+                      ? "0"
+                      : `+${points}`}{" "}
+                  <span class="text-gray-400 font-normal">({result})</span>
+                </td>
+              </tr>
+            );
+          }}
         </For>
       </tbody>
     </table>

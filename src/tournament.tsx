@@ -210,7 +210,7 @@ export type Game = {
 // 8 points for overall winner
 // 5 points for 3rd place game winner
 
-const ROUND_WIN_POINTS: Record<Round, number> = {
+export const ROUND_WIN_POINTS: Record<Round, number> = {
   GROUP: 3,
   R32: 4,
   R16: 5,

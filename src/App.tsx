@@ -1,4 +1,4 @@
-import { createResource, Match, Switch, type Component } from "solid-js";
+import { createResource, type Component, Show } from "solid-js";
 import ScoresTable from "./ScoresTable";
 import PicksDetails from "./PicksDetails";
 import cachedGamesJson from "./games.json";
@@ -15,14 +15,16 @@ const App: Component = () => {
       <h1 class="pb-4 text-2xl">World Cup 2026</h1>
       <PicksDetails />
 
-      <Switch>
-        <Match when={gamesFromApi.error}>
-          <span>Error loading games data: {gamesFromApi.error.message}</span>
-        </Match>
-        <Match when={gamesFromApi()}>
-          <ScoresTable scores={calculateScores(gamesFromApi())} />
-        </Match>
-      </Switch>
+      <Show when={gamesFromApi.error}>
+        <div class="bg-red-100 w-fit px-2 py-1 mb-4 text-sm text-red-900">
+          Error loading fresh games data: {gamesFromApi.error.message}
+        </div>
+      </Show>
+
+      <ScoresTable
+        scores={calculateScores(gamesFromApi())}
+        games={gamesFromApi()}
+      />
     </div>
   );
 };
