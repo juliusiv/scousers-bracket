@@ -71,14 +71,17 @@ const Th = (props: { title: string }) => {
   );
 };
 
-const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
-  const scores = calculateScores(games);
-  const sortedScores = Object.entries(scores).toSorted((a, b) => {
-    const [, score1] = a;
-    const [, score2] = b;
+const ScoresTable: Component<{ games: Game[] }> = (props) => {
+  const games = () => props.games;
 
-    return score2.totalScored - score1.totalScored;
-  });
+  const scores = () => calculateScores(games());
+  const sortedScores = () =>
+    Object.entries(scores()).toSorted((a, b) => {
+      const [, score1] = a;
+      const [, score2] = b;
+
+      return score2.totalScored - score1.totalScored;
+    });
 
   const [expanded, setExpanded] = createSignal<Bab | null>(null);
 
@@ -97,7 +100,7 @@ const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
       </thead>
 
       <tbody>
-        <For each={sortedScores}>
+        <For each={sortedScores()}>
           {([bab, score]) => (
             <>
               <tr
@@ -141,7 +144,7 @@ const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
                     colspan={colSpan}
                     class="border border-gray-300 bg-gray-50 px-4 py-2"
                   >
-                    <ExpandedResults gameResults={getBabGames(games, bab)} />
+                    <ExpandedResults gameResults={getBabGames(games(), bab)} />
                   </td>
                 </tr>
               </Show>

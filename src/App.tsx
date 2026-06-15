@@ -1,15 +1,15 @@
-import { createResource, type Component, Show } from "solid-js";
+import { createResource, type Component, Show, Switch, Match } from "solid-js";
 import ScoresTable from "./ScoresTable";
 import PicksDetails from "./PicksDetails";
 import cachedGamesJson from "./games.json";
 import { fetchGames, parseGames } from "./api";
-import { calculateScores } from "./tournament";
+import Icon from "./Icons";
 
 const App: Component = () => {
   const cachedGames = parseGames(cachedGamesJson);
   const [gamesFromApi] = createResource(fetchGames);
 
-  const games = gamesFromApi() ?? cachedGames;
+  const games = () => gamesFromApi() ?? cachedGames;
 
   return (
     <div class="p-4 sm:p-8">
@@ -18,15 +18,50 @@ const App: Component = () => {
         <PicksDetails />
       </div>
 
-      <Show when={gamesFromApi.error}>
-        <div class="bg-red-100 w-fit px-2 py-1 mb-4 text-base sm:text-sm text-red-900">
-          Error loading fresh games data: {gamesFromApi.error.message}
-        </div>
-      </Show>
-
-      <div class="w-full overflow-scroll">
-        <ScoresTable games={games} />
+      <div class="w-full overflow-scroll mb-4">
+        <ScoresTable games={games()} />
       </div>
+
+      <Switch>
+        <Match when={gamesFromApi.error}>
+          <FetchStatus
+            state="error"
+            text="There was an issue fetching fresh match data"
+          />
+        </Match>
+        <Match when={gamesFromApi()}>
+          <FetchStatus state="success" text="Loaded most recent match data" />
+        </Match>
+        <Match when={gamesFromApi.state !== "ready"}>
+          <FetchStatus state="fetching" text="Fetching latest match data" />
+        </Match>
+      </Switch>
+    </div>
+  );
+};
+
+const FetchStatus = (props: {
+  state: "error" | "fetching" | "success";
+  text: string;
+}) => {
+  const { state, text } = props;
+
+  const icon =
+    state === "error" ? "warning" : state === "fetching" ? "soccer" : "check";
+  const fontColor =
+    state === "error"
+      ? "text-red-900"
+      : state === "fetching"
+        ? "text-gray-600"
+        : "text-greem-800";
+
+  return (
+    <div class={`${fontColor} flex items-center`}>
+      <Icon
+        variant={icon}
+        class={`size-5 mr-1 ${state === "fetching" ? "animate-spin [animation-duration:2s]" : ""}`}
+      />
+      {text}
     </div>
   );
 };
