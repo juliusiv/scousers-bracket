@@ -73,6 +73,12 @@ const Th = (props: { title: string }) => {
 
 const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
   const scores = calculateScores(games);
+  const sortedScores = Object.entries(scores).toSorted((a, b) => {
+    const [, score1] = a;
+    const [, score2] = b;
+
+    return score2.totalScored - score1.totalScored;
+  });
 
   const [expanded, setExpanded] = createSignal<Bab | null>(null);
 
@@ -91,8 +97,8 @@ const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
       </thead>
 
       <tbody>
-        <For each={BABS}>
-          {(bab) => (
+        <For each={sortedScores}>
+          {([bab, score]) => (
             <>
               <tr
                 class="cursor-pointer hover:bg-gray-50 select-none"
@@ -109,10 +115,10 @@ const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
                     const { scored, possible } =
                       col.key === "total"
                         ? {
-                            scored: scores[bab].totalScored,
-                            possible: scores[bab].totalPossible,
+                            scored: score.totalScored,
+                            possible: score.totalPossible,
                           }
-                        : scores[bab][col.key];
+                        : score[col.key];
 
                     const formattedPct = ((scored / possible) * 100).toFixed(0);
 
