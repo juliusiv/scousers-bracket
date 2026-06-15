@@ -198,7 +198,7 @@ export type Game = {
   homeScore: number;
   awayScore: number;
   round: Round;
-  isFinished: boolean;
+  status: "in-progress" | "finished" | "not-started" | "unknown";
 };
 
 // 1 point for a tie
@@ -220,18 +220,34 @@ export const ROUND_WIN_POINTS: Record<Round, number> = {
   FINAL: 8,
 };
 
-export type Score = Record<Round, number> & { total: number };
+export type Score = Record<Round, { scored: number; possible: number }> & {
+  totalScored: number;
+  totalPossible: number;
+};
 
 export function calculateScores(games: Game[]): Record<Bab, Score> {
   const scores = Object.fromEntries(
-    BABS.map((bab) => [
-      bab,
-      { ...Object.fromEntries(ROUNDS.map((r) => [r, 0])), total: 0 },
-    ]),
+    BABS.map((bab) => {
+      const roundScores = {
+        ...Object.fromEntries(
+          ROUNDS.map((r) => [
+            r,
+            {
+              scored: 0,
+              possible: 0,
+            },
+          ]),
+        ),
+        totalScored: 0,
+        totalPossible: 0,
+      };
+
+      return [bab, roundScores];
+    }),
   ) as Record<Bab, Score>;
 
   for (const game of games) {
-    if (!game.isFinished) {
+    if (game.status !== "finished") {
       continue;
     }
 
@@ -239,16 +255,32 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
     const homeBab = DRAFT_PICKS[homeTeam];
     const awayBab = DRAFT_PICKS[awayTeam];
 
+    const babHasBothTeams = homeBab === awayBab;
+    // If the BAB has both teams then home/away will both point to their
+    // scores, so only update one of them or else we'll double-count.
+    // Since only one team can win, the max possible in a game where they
+    // own both teams is 3; they could also both tie and get 1 point for
+    // each draw.
+    if (babHasBothTeams) {
+      scores[homeBab][round].possible += 3;
+      scores[homeBab].totalPossible += 3;
+    } else {
+      scores[homeBab][round].possible += 3;
+      scores[homeBab].totalPossible += 3;
+      scores[awayBab][round].possible += 3;
+      scores[awayBab].totalPossible += 3;
+    }
+
     if (homeScore === awayScore) {
-      scores[homeBab][round] += 1;
-      scores[homeBab].total += 1;
-      scores[awayBab][round] += 1;
-      scores[awayBab].total += 1;
+      scores[homeBab][round].scored += 1;
+      scores[homeBab].totalScored += 1;
+      scores[awayBab][round].scored += 1;
+      scores[awayBab].totalScored += 1;
     } else {
       const winnerBab = homeScore > awayScore ? homeBab : awayBab;
       const pts = ROUND_WIN_POINTS[round];
-      scores[winnerBab][round] += pts;
-      scores[winnerBab].total += pts;
+      scores[winnerBab][round].scored += pts;
+      scores[winnerBab].totalScored += pts;
     }
   }
 

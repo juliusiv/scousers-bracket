@@ -43,7 +43,7 @@ function getBabGames(games: Game[], bab: Bab): GameResult[] {
   return games
     .filter(
       (g) =>
-        g.isFinished &&
+        g.status === "finished" &&
         (DRAFT_PICKS[g.homeTeam] === bab || DRAFT_PICKS[g.awayTeam] === bab),
     )
     .map((game) => {
@@ -61,6 +61,16 @@ function getBabGames(games: Game[], bab: Bab): GameResult[] {
     });
 }
 
+const Th = (props: { title: string }) => {
+  const { title } = props;
+
+  return (
+    <th class="border border-gray-300 pl-2 pr-4 py-2 font-semibold text-left">
+      {title}
+    </th>
+  );
+};
+
 const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
   const scores = calculateScores(games);
 
@@ -72,19 +82,11 @@ const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
   const colSpan = 1 + ROUND_COLUMNS.length;
 
   return (
-    <table class="border-collapse text-xl sm:text-sm">
+    <table class="border-collapse text-xl sm:text-base">
       <thead>
         <tr>
-          <th class="border border-gray-300 px-4 py-2 font-semibold text-left">
-            BAB
-          </th>
-          <For each={ROUND_COLUMNS}>
-            {(col) => (
-              <th class="border border-gray-300 px-4 py-2 font-semibold text-left">
-                {col.label}
-              </th>
-            )}
-          </For>
+          <Th title="BAB" />
+          <For each={ROUND_COLUMNS}>{(col) => <Th title={col.label} />}</For>
         </tr>
       </thead>
 
@@ -103,11 +105,22 @@ const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
                   {bab}
                 </td>
                 <For each={ROUND_COLUMNS}>
-                  {(col) => (
-                    <td class="border border-gray-300 px-2 py-1">
-                      {scores[bab][col.key]}
-                    </td>
-                  )}
+                  {(col) => {
+                    const { scored, possible } =
+                      col.key === "total"
+                        ? {
+                            scored: scores[bab].totalScored,
+                            possible: scores[bab].totalPossible,
+                          }
+                        : scores[bab][col.key];
+
+                    return (
+                      <td class="border border-gray-300 px-2 py-1">
+                        <span class="mr-1">{scored}</span>
+                        <span class="text-sm sm:text-xs">/{possible}</span>
+                      </td>
+                    );
+                  }}
                 </For>
               </tr>
 

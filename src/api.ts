@@ -2,11 +2,13 @@ import { Game, GROUPS, ROUNDS, TEAM_NAMES } from "./tournament";
 
 type ApiGame = {
   home_team_name_en?: string;
+  home_team_id: string;
   away_team_name_en?: string;
+  away_team_id: string;
   home_score: string | null;
   away_score: string | null;
   group: string;
-  finished: string;
+  time_elapsed: string;
 };
 
 export const parseGames = (apiGames: ApiGame[]): Game[] => {
@@ -15,11 +17,19 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
   apiGames.forEach((apiGame) => {
     const game: Partial<Game> = {};
 
-    const finished = apiGame.finished;
-    if (finished !== "TRUE" && finished !== "FALSE") {
-      throw Error(`Invalid finished: ${finished}`);
+    if (apiGame.time_elapsed === "finished") {
+      game.status = "finished";
+    } else if (apiGame.time_elapsed === "live") {
+      game.status = "in-progress";
+    } else if (apiGame.time_elapsed === "notstarted") {
+      if (apiGame.home_team_id === "0" || apiGame.away_team_id === "0") {
+        game.status = "unknown";
+      } else {
+        game.status = "not-started";
+      }
+    } else {
+      throw Error(`Invalid finished: ${apiGame.time_elapsed}`);
     }
-    game.isFinished = finished === "TRUE";
 
     const homeTeam = apiGame.home_team_name_en;
     const awayTeam = apiGame.away_team_name_en;
