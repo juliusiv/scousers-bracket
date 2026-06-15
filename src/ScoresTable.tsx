@@ -114,10 +114,15 @@ const ScoresTable: Component<{ games: Game[] }> = ({ games }) => {
                           }
                         : scores[bab][col.key];
 
+                    const formattedPct = ((scored / possible) * 100).toFixed(0);
+
                     return (
                       <td class="border border-gray-300 px-2 py-1">
                         <span class="mr-1">{scored}</span>
-                        <span class="text-sm sm:text-xs">/{possible}</span>
+                        <span class="text-sm sm:text-xs text-nowrap">
+                          /{possible}{" "}
+                          {col.key === "total" ? `(${formattedPct}%)` : ""}
+                        </span>
                       </td>
                     );
                   }}
