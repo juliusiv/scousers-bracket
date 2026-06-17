@@ -43,17 +43,19 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
     game.homeTeam = homeTeam;
     game.awayTeam = awayTeam;
 
-    const homeScore = Number(apiGame.home_score);
-    const awayScore = Number(apiGame.away_score);
+    const homeScore =
+      apiGame.home_score === "null" ? 0 : Number(apiGame.home_score);
+    const awayScore =
+      apiGame.away_score === "null" ? 0 : Number(apiGame.away_score);
     if (!Number.isFinite(homeScore) || !Number.isFinite(awayScore)) {
-      throw Error(`Invalid score: ${apiGame}`);
+      throw Error(`Invalid score: ${JSON.stringify(apiGame)}`);
     }
     game.homeScore = homeScore;
     game.awayScore = awayScore;
 
     const round = apiGame.group;
     if (!ROUNDS.includes(round) && !GROUPS.includes(round)) {
-      throw Error(`Invalid round: ${apiGame}`);
+      throw Error(`Invalid round: ${JSON.stringify(apiGame)}`);
     }
 
     if (GROUPS.includes(round)) {
