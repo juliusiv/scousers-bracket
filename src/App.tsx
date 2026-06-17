@@ -7,9 +7,6 @@ import Icon from "./Icons";
 
 const App: Component = () => {
   const cachedGames = parseGames(cachedGamesJson);
-  const [gamesFromApi] = createResource(fetchGames);
-
-  const games = () => gamesFromApi() ?? cachedGames;
 
   return (
     <div class="p-4 sm:p-8">
@@ -19,23 +16,8 @@ const App: Component = () => {
       </div>
 
       <div class="w-full overflow-scroll mb-4">
-        <ScoresTable games={games()} />
+        <ScoresTable games={cachedGames} />
       </div>
-
-      <Switch>
-        <Match when={gamesFromApi.error}>
-          <FetchStatus
-            state="error"
-            text="There was an issue fetching fresh match data"
-          />
-        </Match>
-        <Match when={gamesFromApi()}>
-          <FetchStatus state="success" text="Loaded most recent match data" />
-        </Match>
-        <Match when={gamesFromApi.state !== "ready"}>
-          <FetchStatus state="fetching" text="Fetching latest match data" />
-        </Match>
-      </Switch>
     </div>
   );
 };

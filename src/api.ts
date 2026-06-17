@@ -17,7 +17,7 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
   apiGames.forEach((apiGame) => {
     const game: Partial<Game> = {};
 
-    if (apiGame.time_elapsed === "finished") {
+    if (apiGame.time_elapsed.toLowerCase() === "finished") {
       game.status = "finished";
     } else if (apiGame.time_elapsed === "live") {
       game.status = "in-progress";
