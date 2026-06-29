@@ -255,6 +255,8 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
     const homeBab = DRAFT_PICKS[homeTeam];
     const awayBab = DRAFT_PICKS[awayTeam];
 
+    const pts = ROUND_WIN_POINTS[round];
+
     const babHasBothTeams = homeBab === awayBab;
     // If the BAB has both teams then home/away will both point to their
     // scores, so only update one of them or else we'll double-count.
@@ -262,13 +264,13 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
     // own both teams is 3; they could also both tie and get 1 point for
     // each draw.
     if (babHasBothTeams) {
-      scores[homeBab][round].possible += 3;
-      scores[homeBab].totalPossible += 3;
+      scores[homeBab][round].possible += pts;
+      scores[homeBab].totalPossible += pts;
     } else {
-      scores[homeBab][round].possible += 3;
-      scores[homeBab].totalPossible += 3;
-      scores[awayBab][round].possible += 3;
-      scores[awayBab].totalPossible += 3;
+      scores[homeBab][round].possible += pts;
+      scores[homeBab].totalPossible += pts;
+      scores[awayBab][round].possible += pts;
+      scores[awayBab].totalPossible += pts;
     }
 
     if (homeScore === awayScore) {
@@ -278,7 +280,6 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
       scores[awayBab].totalScored += 1;
     } else {
       const winnerBab = homeScore > awayScore ? homeBab : awayBab;
-      const pts = ROUND_WIN_POINTS[round];
       scores[winnerBab][round].scored += pts;
       scores[winnerBab].totalScored += pts;
     }
