@@ -1,6 +1,6 @@
 import type { Component } from "solid-js";
 import { For } from "solid-js";
-import { BABS, DRAFT_PICKS, TEAMS } from "./tournament";
+import { BABS, DRAFT_PICKS, Game, isTeamEliminated, TEAMS } from "./tournament";
 
 const picksByBab = BABS.map((bab) =>
   Object.entries(DRAFT_PICKS)
@@ -8,7 +8,9 @@ const picksByBab = BABS.map((bab) =>
     .map(([team]) => team),
 );
 
-const PicksDetails: Component = () => {
+const PicksDetails: Component<{ games: Game[] }> = (props) => {
+  const games = () => props.games;
+
   return (
     <details class="mb-4">
       <summary class="cursor-pointer text-xl sm:text-sm font-semibold">
@@ -23,10 +25,15 @@ const PicksDetails: Component = () => {
                 <For each={picksByBab[i()]}>
                   {(team) => {
                     const flag = TEAMS[team].flag;
+                    const isEliminated = () => isTeamEliminated(games(), team);
+                    console.log(team, isEliminated());
 
                     return (
-                      <div class="truncate">
-                        {flag} {team}
+                      <div
+                        class={`truncate ${isEliminated() ? "line-through" : ""}`}
+                      >
+                        {flag} {/* <span class="line-through"> */}
+                        {team}
                       </div>
                     );
                   }}

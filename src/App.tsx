@@ -34,7 +34,7 @@ const App: Component = () => {
     <div class="p-4 sm:p-8">
       <h1 class="pb-4 text-4xl sm:text-2xl">World Cup 2026</h1>
       <div class="w-full">
-        <PicksDetails />
+        <PicksDetails games={games()} />
       </div>
 
       <div class="w-full overflow-scroll mb-4">

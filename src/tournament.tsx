@@ -289,7 +289,8 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
       scores[awayBab][round].scored += 1;
       scores[awayBab].totalScored += 1;
     } else {
-      const winnerBab = determineWinner(game);
+      const winningTeam: TeamName = determineWinner(game);
+      const winnerBab: Bab = DRAFT_PICKS[winningTeam];
 
       scores[winnerBab][round].scored += pts;
       scores[winnerBab].totalScored += pts;
@@ -299,16 +300,16 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
   return scores;
 }
 
-const determineWinner = (game: Game): string => {
+const determineWinner = (game: Game): TeamName => {
   const { homeTeam, awayTeam, homeScore, awayScore, homePkScore, awayPkScore } =
     game;
   const homeBab = DRAFT_PICKS[homeTeam];
   const awayBab = DRAFT_PICKS[awayTeam];
 
   if (homeScore === awayScore && homePkScore && awayPkScore) {
-    return homePkScore > awayPkScore ? homeBab : awayBab;
+    return homePkScore > awayPkScore ? homeTeam : awayTeam;
   } else {
-    return homeScore > awayScore ? homeBab : awayBab;
+    return homeScore > awayScore ? homeTeam : awayTeam;
   }
 };
 
@@ -333,4 +334,23 @@ export const numPossibleInRound = (
   }
 
   return num * ROUND_WIN_POINTS[round];
+};
+
+export const isTeamEliminated = (games: Game[], team: TeamName): boolean => {
+  const currentRound: Round = "R32";
+  for (const game of games) {
+    if (game.round !== currentRound) {
+      continue;
+    }
+
+    const isTeamPlayingInRound = [game.homeTeam, game.awayTeam].includes(team);
+    if (isTeamPlayingInRound && game.status === "finished") {
+      const winner = determineWinner(game);
+      return winner !== team;
+    } else if (isTeamPlayingInRound) {
+      return false;
+    }
+  }
+
+  return true;
 };
