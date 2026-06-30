@@ -172,6 +172,9 @@ const ScoresTable: Component<{ games: Game[] }> = (props) => {
 
 const ExpandedResults = (props: { gameResults: GameResult[] }) => {
   const { gameResults } = props;
+  const orderedResults = gameResults.toSorted((gr1, gr2) => {
+    return gr2.game.date.valueOf() - gr1.game.date.valueOf();
+  });
 
   return (
     <table class="text-lg sm:text-xs border-collapse">
@@ -185,7 +188,7 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
       </thead>
 
       <tbody>
-        <For each={gameResults}>
+        <For each={orderedResults}>
           {({ game, homeIsBab, awayIsBab, points }) => {
             const isDraw =
               game.homeScore === game.awayScore && game.round === "GROUP";

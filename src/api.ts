@@ -11,6 +11,7 @@ type ApiGame = {
   away_penalty_score?: string;
   group: string;
   time_elapsed: string;
+  local_date: string;
 };
 
 export const parseGames = (apiGames: ApiGame[]): Game[] => {
@@ -78,6 +79,8 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
     } else if (isValidRound(round)) {
       game.round = round;
     }
+
+    game.date = new Date(apiGame.local_date);
 
     games.push(game as Game);
   });

@@ -209,6 +209,7 @@ export type Game = {
   awayPkScore: number | null;
   round: Round;
   status: "in-progress" | "finished" | "not-started" | "unknown";
+  date: Date;
 };
 
 // 1 point for a tie
