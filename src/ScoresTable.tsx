@@ -11,6 +11,7 @@ import {
   calculateScores,
   Round,
   numPossibleInRound,
+  determineWinner,
 } from "./tournament";
 
 const ROUND_COLUMNS: { label: string; key: Round | "total" }[] = [
@@ -52,10 +53,10 @@ function getBabGames(games: Game[], bab: Bab): GameResult[] {
       const homeIsBab = DRAFT_PICKS[game.homeTeam] === bab;
       const awayIsBab = DRAFT_PICKS[game.awayTeam] === bab;
       let points = 0;
-      if (game.homeScore === game.awayScore) {
+      if (game.homeScore === game.awayScore && game.round === "GROUP") {
         points = (homeIsBab ? 1 : 0) + (awayIsBab ? 1 : 0);
       } else {
-        const homeWon = game.homeScore > game.awayScore;
+        const homeWon = determineWinner(game) === game.homeTeam;
         if (homeWon && homeIsBab) points = ROUND_WIN_POINTS[game.round];
         if (!homeWon && awayIsBab) points = ROUND_WIN_POINTS[game.round];
       }
@@ -186,8 +187,10 @@ const ExpandedResults = (props: { gameResults: GameResult[] }) => {
       <tbody>
         <For each={gameResults}>
           {({ game, homeIsBab, awayIsBab, points }) => {
-            const isDraw = game.homeScore === game.awayScore;
-            const homeWon = game.homeScore > game.awayScore;
+            const isDraw =
+              game.homeScore === game.awayScore && game.round === "GROUP";
+            const homeWon = determineWinner(game) === game.homeTeam;
+
             const babWon =
               (homeWon && homeIsBab) || (!homeWon && !isDraw && awayIsBab);
             const result = isDraw ? "Draw" : babWon ? "Win" : "Loss";

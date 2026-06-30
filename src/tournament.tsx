@@ -300,7 +300,7 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
   return scores;
 }
 
-const determineWinner = (game: Game): TeamName => {
+export const determineWinner = (game: Game): TeamName => {
   const { homeTeam, awayTeam, homeScore, awayScore, homePkScore, awayPkScore } =
     game;
   const homeBab = DRAFT_PICKS[homeTeam];
