@@ -13,7 +13,7 @@ const PicksDetails: Component<{ games: Game[] }> = (props) => {
 
   return (
     <details class="mb-4">
-      <summary class="cursor-pointer text-xl sm:text-sm font-semibold">
+      <summary class="cursor-pointer text-2xl sm:text-md font-semibold">
         Picks
       </summary>
       <div class="grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:gap-6 mt-2 text-xl sm:text-sm">

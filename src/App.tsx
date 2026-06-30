@@ -32,13 +32,21 @@ const App: Component = () => {
 
   return (
     <div class="p-4 sm:p-8">
-      <h1 class="pb-4 text-4xl sm:text-2xl">World Cup 2026</h1>
+      <h1 class="pb-4 text-4xl sm:text-3xl">World Cup 2026</h1>
       <div class="w-full">
         <PicksDetails games={games()} />
       </div>
 
       <div class="w-full overflow-scroll mb-4">
-        <ScoresTable games={games()} />
+        <details class="mb-4" open>
+          <summary class="cursor-pointer text-2xl sm:text-md font-semibold">
+            Scores
+          </summary>
+
+          <div class="mt-2">
+            <ScoresTable games={games()} />
+          </div>
+        </details>
       </div>
 
       <Switch>
