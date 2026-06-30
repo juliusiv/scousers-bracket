@@ -311,3 +311,26 @@ const determineWinner = (game: Game): string => {
     return homeScore > awayScore ? homeBab : awayBab;
   }
 };
+
+export const numPossibleInRound = (
+  games: Game[],
+  bab: Bab,
+  round: Round,
+): number => {
+  let num = 0;
+
+  for (const game of games) {
+    if (game.round !== round) {
+      continue;
+    }
+
+    const hasHomeTeam = DRAFT_PICKS[game.homeTeam] === bab;
+    const hasAwayTeam = DRAFT_PICKS[game.awayTeam] === bab;
+
+    if (hasHomeTeam || hasAwayTeam) {
+      num++;
+    }
+  }
+
+  return num * ROUND_WIN_POINTS[round];
+};

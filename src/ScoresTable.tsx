@@ -9,9 +9,11 @@ import {
   type Game,
   type Score,
   calculateScores,
+  Round,
+  numPossibleInRound,
 } from "./tournament";
 
-const ROUND_COLUMNS: { label: string; key: keyof Score }[] = [
+const ROUND_COLUMNS: { label: string; key: Round | "total" }[] = [
   { label: "Total", key: "total" },
   { label: "Group", key: "GROUP" },
   { label: "R32", key: "R32" },
@@ -124,12 +126,23 @@ const ScoresTable: Component<{ games: Game[] }> = (props) => {
                         : score[col.key];
 
                     const formattedPct = ((scored / possible) * 100).toFixed(0);
+                    let possibleInRound = null;
+                    if (col.key === "R32") {
+                      possibleInRound = numPossibleInRound(
+                        games(),
+                        bab,
+                        col.key,
+                      );
+                    }
 
                     return (
                       <td class="border border-gray-300 px-2 py-1">
                         <span class="mr-1">{scored}</span>
                         <span class="text-sm sm:text-xs text-nowrap">
                           /{possible}{" "}
+                          {possibleInRound !== null
+                            ? `(${possibleInRound})`
+                            : ""}
                           {col.key === "total" ? `(${formattedPct}%)` : ""}
                         </span>
                       </td>
