@@ -189,14 +189,24 @@ export const GROUPS = [
   "K",
   "L",
 ];
-export const ROUNDS = ["GROUP", "R32", "R16", "QF", "SF", "3RD", "FINAL"];
-type Round = (typeof ROUNDS)[number];
+export const ROUNDS = [
+  "GROUP",
+  "R32",
+  "R16",
+  "QF",
+  "SF",
+  "3RD",
+  "FINAL",
+] as const;
+export type Round = (typeof ROUNDS)[number];
 
 export type Game = {
   homeTeam: TeamName;
   awayTeam: TeamName;
   homeScore: number;
   awayScore: number;
+  homePkScore: number | null;
+  awayPkScore: number | null;
   round: Round;
   status: "in-progress" | "finished" | "not-started" | "unknown";
 };
@@ -273,13 +283,14 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
       scores[awayBab].totalPossible += pts;
     }
 
-    if (homeScore === awayScore) {
+    if (homeScore === awayScore && round === "GROUP") {
       scores[homeBab][round].scored += 1;
       scores[homeBab].totalScored += 1;
       scores[awayBab][round].scored += 1;
       scores[awayBab].totalScored += 1;
     } else {
-      const winnerBab = homeScore > awayScore ? homeBab : awayBab;
+      const winnerBab = determineWinner(game);
+
       scores[winnerBab][round].scored += pts;
       scores[winnerBab].totalScored += pts;
     }
@@ -287,3 +298,16 @@ export function calculateScores(games: Game[]): Record<Bab, Score> {
 
   return scores;
 }
+
+const determineWinner = (game: Game): string => {
+  const { homeTeam, awayTeam, homeScore, awayScore, homePkScore, awayPkScore } =
+    game;
+  const homeBab = DRAFT_PICKS[homeTeam];
+  const awayBab = DRAFT_PICKS[awayTeam];
+
+  if (homeScore === awayScore && homePkScore && awayPkScore) {
+    return homePkScore > awayPkScore ? homeBab : awayBab;
+  } else {
+    return homeScore > awayScore ? homeBab : awayBab;
+  }
+};

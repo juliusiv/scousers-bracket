@@ -1,4 +1,4 @@
-import { Game, GROUPS, ROUNDS, TEAM_NAMES } from "./tournament";
+import { Game, GROUPS, Round, ROUNDS, TEAM_NAMES } from "./tournament";
 
 type ApiGame = {
   home_team_name_en?: string;
@@ -7,6 +7,8 @@ type ApiGame = {
   away_team_id: string;
   home_score: string | null;
   away_score: string | null;
+  home_penalty_score?: string;
+  away_penalty_score?: string;
   group: string;
   time_elapsed: string;
 };
@@ -29,6 +31,19 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
       }
     } else {
       throw Error(`Invalid finished: ${apiGame.time_elapsed}`);
+    }
+
+    const homePkScore = Number(apiGame.home_penalty_score);
+    const awayPkScore = Number(apiGame.away_penalty_score);
+    if (apiGame.home_penalty_score === "null" || !apiGame.home_penalty_score) {
+      game.homePkScore = null;
+    } else if (isFinite(homePkScore)) {
+      game.homePkScore = homePkScore;
+    }
+    if (apiGame.away_penalty_score === "null" || !apiGame.away_penalty_score) {
+      game.awayPkScore = null;
+    } else if (isFinite(awayPkScore)) {
+      game.awayPkScore = awayPkScore;
     }
 
     const homeTeam = apiGame.home_team_name_en;
@@ -54,13 +69,13 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
     game.awayScore = awayScore;
 
     const round = apiGame.group;
-    if (!ROUNDS.includes(round) && !GROUPS.includes(round)) {
+    if (!isValidRound(round) && !GROUPS.includes(round)) {
       throw Error(`Invalid round: ${JSON.stringify(apiGame)}`);
     }
 
     if (GROUPS.includes(round)) {
       game.round = "GROUP";
-    } else {
+    } else if (isValidRound(round)) {
       game.round = round;
     }
 
@@ -68,6 +83,10 @@ export const parseGames = (apiGames: ApiGame[]): Game[] => {
   });
 
   return games;
+};
+
+const isValidRound = (r: string): r is Round => {
+  return ROUNDS.includes(r as unknown as any);
 };
 
 export const fetchGames = async (): Promise<Game[]> => {
