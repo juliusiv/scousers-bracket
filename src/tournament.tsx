@@ -337,10 +337,11 @@ export const numPossibleInRound = (
   return num * ROUND_WIN_POINTS[round];
 };
 
+export const CURRENT_ROUND: Round = "QF";
+
 export const isTeamEliminated = (games: Game[], team: TeamName): boolean => {
-  const currentRound: Round = "R32";
   for (const game of games) {
-    if (game.round !== currentRound) {
+    if (game.round !== CURRENT_ROUND) {
       continue;
     }
 

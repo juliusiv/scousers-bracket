@@ -12,6 +12,7 @@ import {
   Round,
   numPossibleInRound,
   determineWinner,
+  CURRENT_ROUND,
 } from "./tournament";
 
 const ROUND_COLUMNS: { label: string; key: Round | "total" }[] = [
@@ -128,7 +129,7 @@ const ScoresTable: Component<{ games: Game[] }> = (props) => {
 
                     const formattedPct = ((scored / possible) * 100).toFixed(0);
                     let possibleInRound = null;
-                    if (col.key === "R32") {
+                    if (col.key === CURRENT_ROUND) {
                       possibleInRound = numPossibleInRound(
                         games(),
                         bab,
